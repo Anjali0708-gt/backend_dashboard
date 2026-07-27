@@ -40,8 +40,7 @@ export const GetAllMeasurement = async (req, res) => {
 
 export const GetMeasurementById = async (req, res) => {
   try {
-    const measurement = await MeasurementModel.findById(req.params.id)
-      .populate("customer_id");
+    const measurement = await MeasurementModel.findById(req.params.id);
 
     if (!measurement) {
       return res.status(404).json({

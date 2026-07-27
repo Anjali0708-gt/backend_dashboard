@@ -1,16 +1,16 @@
 import express from "express";
-import dotenv from "dotenv";
+import "dotenv/config";
 import cors from "cors";
- import connectDB from "./config/db.js";
+import connectDB from "./config/db.js";
 import dashboardrouter from './routes/DashboardRoutes.js'
- import Customerrouter from "./routes/CustomerRoute.js";
- import reportRoute from "./routes/ReportRoute.js";
-
+import Customerrouter from "./routes/CustomerRoute.js";
+import reportRoute from "./routes/ReportRoute.js";
+import productRoute from './routes/ProductRoute.js'
 import orderRoute from "./routes/OrderRoute.js"
+import payementRoute from './routes/paymentRoute.js'
+import imageRoute from './routes/imageroute.js'
 import measurementRoute from './routes/MeasurementRoute.js'
-
-dotenv.config();
-
+import CartRoute from './routes/CartRoute.js'
 // Connect Database
 connectDB();
 
@@ -27,12 +27,21 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("Server is working");
 });
+app.use("/api/product", productRoute);
+app.use("/api/Cart", CartRoute);
+app.use("/api/payment", payementRoute);
 app.use("/api/Customer",Customerrouter);
+app.use("api/image",imageRoute)
 app.use("/api/report",reportRoute)
 app.use("/api/dashboard",dashboardrouter)
 app.use("/api/order",orderRoute)
 app.use('/api/measurement',measurementRoute)
 // Server
+console.log({
+  user: process.env.Email,
+  pass: process.env.GOOGLE_APP_PASSWORD,
+});
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

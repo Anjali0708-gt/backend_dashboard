@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs";
 import CustomerModel from "../Models/customer.js";
-// import {sendmail}from '../util/sendOtp.js'
+import {sendmail}from '../util/sendOtp.js'
 import mongoose, { trusted } from "mongoose";
+import jwt from 'jsonwebtoken';
 export const getAll = async (req, res) => {
     try {
 
@@ -64,22 +65,30 @@ export const Login= async(req,res)=>
        const exist=await CustomerModel.findOne({email});
        if(!exist)
        {
-        res.status(404).json({message:"user not register"})
+        return res.status(404).json({message:"user not register"})
        }
        const comparePassword = await bcrypt.compare(password, exist.password);
        if(!comparePassword)
        {
          return res.status(303).json({message:"wrong password"})
        }
-       else
-       {
-        return res.status(200).json({message:"user login sucessfully"},) 
-       }
+
+       const token = jwt.sign({ user_id: exist._id, email: exist.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+       return res.status(200).json({
+         message:"user login sucessfully",
+         token,
+         user: {
+           id: exist._id,
+           name: exist.name,
+           email: exist.email,
+         }
+       })
     }
-    
 
     catch (err) {
-        console.log("error while login user")
+        console.log("error while login user", err)
+        return res.status(500).json({message:"error while login user"})
     }
 
 
@@ -145,7 +154,82 @@ console.log("Deleted User:", deletedUser);
 //         return res.status(200).json({message:"user login sucessfully"}) 
 //        }
 //    }
+export const forgetPassword=async(req,res)=>
+{
+    try
+    {
+        const{email}=req.body;
+        const user=await CustomerModel.findOne({email})
+        if(!user)
+        {
+            res.status(404).json({message:"user cannot find"})
+        }
+        const token= jwt.sign({user_id:user._id},process.env.JWT_SECRET,{expiresIn:'1h'})
+        user.token = token;
+        await user.save();
+        
+        
+        const reset = `http://localhost:3000/ResetPassword/${Token}`
 
+        const html=`
+         <h2>HELLO ${user.name}</h2>
+         <h3>open link to reset password</h3>
+         <p><a href="${reset}">${reset}</a></p>
+         
+        `
+        await sendmail(user.email,"reset password",html)
+        res.status(201).json({
+  msg: "Reset password link sent to your email.",
+  token: token,
+});
+
+        
+
+    }
+    catch(e)
+    {
+      res.status(500).json({
+  message: "Error while forgetting password",
+    error: process.env.NODE_ENV === "development" ? e.message : undefined,
+});
+    }
+    
+}
+export const resetpassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    const { token } = req.params;
+
+    // Verify token
+    const verify = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find user
+    const user = await CustomerModel.findById(verify.user_id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Hash new password
+    const hashed = await bcrypt.hash(password, 10);
+
+    // Update password
+    user.password = hashed;
+
+    // Save user
+    await user.save();
+
+    res.status(200).json({
+      message: "Password reset successfully",
+    });
+
+  } catch (e) {
+    console.log("Error in reset password:", e.message);
+    res.status(500).json({
+      message: "Cannot reset password",
+    });
+  }
+};
    export const search=async(req,res)=>
    {
     try{

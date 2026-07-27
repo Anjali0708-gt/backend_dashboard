@@ -1,4 +1,5 @@
 import express from "express";
+import authMiddleware from "../Middleware/authMiddleware.js";
 
 import {
   AddMeasurement,
@@ -10,14 +11,10 @@ import {
 
 const router = express.Router();
 
-router.post("/add", AddMeasurement);
-
-router.get("/", GetAllMeasurement);
-
-router.get("/:id", GetMeasurementById);
-
-router.put("/:id", UpdateMeasurement);
-
-router.delete("/:id", DeleteMeasurement);
+router.post("/add", authMiddleware, AddMeasurement);
+router.get("/", authMiddleware, GetAllMeasurement);
+router.get("/:id", authMiddleware, GetMeasurementById);
+router.put("/:id", authMiddleware, UpdateMeasurement);
+router.delete("/:id", authMiddleware, DeleteMeasurement);
 
 export default router;

@@ -1,7 +1,9 @@
 import express from "express";
+import authMiddleware from "../Middleware/authMiddleware.js";
 
 import {
 createOrder,
+getOrderById,
 getOrders,
 updateOrder,
 deleteOrder
@@ -9,12 +11,14 @@ deleteOrder
 
 const router = express.Router();
 
-router.post("/",createOrder);
+router.post("/", authMiddleware, createOrder);
 
-router.get("/",getOrders);
+router.get("/", authMiddleware, getOrders);
+router.get("/:id", authMiddleware, getOrderById);
+router.put("/:id", authMiddleware, updateOrder);
 
-router.put("/:id",updateOrder);
+router.delete("/:id", authMiddleware, deleteOrder);
 
-router.delete("/:id",deleteOrder);
+
 
 export default router;
