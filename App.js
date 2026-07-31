@@ -3,12 +3,12 @@ import "dotenv/config";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import dashboardrouter from './routes/DashboardRoutes.js'
-import Customerrouter from "./routes/CustomerRoute.js";
+import       Customerrouter from "./routes/CustomerRoute.js";
 import reportRoute from "./routes/ReportRoute.js";
 import productRoute from './routes/ProductRoute.js'
 import orderRoute from "./routes/OrderRoute.js"
 import payementRoute from './routes/paymentRoute.js'
-import imageRoute from './routes/imageroute.js'
+import serviceRoute from './routes/ServiceRoute.js'
 import measurementRoute from './routes/MeasurementRoute.js'
 import CartRoute from './routes/CartRoute.js'
 // Connect Database
@@ -16,7 +16,7 @@ connectDB();
 
 const app = express();
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "http://localhost:5173",
     credentials: true
 }));
 
@@ -31,7 +31,7 @@ app.use("/api/product", productRoute);
 app.use("/api/Cart", CartRoute);
 app.use("/api/payment", payementRoute);
 app.use("/api/Customer",Customerrouter);
-app.use("api/image",imageRoute)
+app.use("api/service",serviceRoute)
 app.use("/api/report",reportRoute)
 app.use("/api/dashboard",dashboardrouter)
 app.use("/api/order",orderRoute)

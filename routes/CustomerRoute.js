@@ -7,7 +7,7 @@ const router=express.Router()
 router.post("/Login",Login);
 router.post("/signin",signin)
 router.post('/forgetPassword',forgetPassword)
-router.get('/resetpassword',resetpassword)
+router.put('/resetpassword',resetpassword)
 
 router.get("/", authMiddleware, getAll);
 router.get("/:id", authMiddleware, getbyid)
