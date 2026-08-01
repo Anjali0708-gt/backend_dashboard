@@ -3,7 +3,8 @@ import "dotenv/config";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import dashboardrouter from './routes/DashboardRoutes.js'
-import       Customerrouter from "./routes/CustomerRoute.js";
+import Customerrouter from "./routes/CustomerRoute.js";
+import ContactRoute from './routes/ContactRoute.js'
 import reportRoute from "./routes/ReportRoute.js";
 import productRoute from './routes/ProductRoute.js'
 import orderRoute from "./routes/OrderRoute.js"
@@ -31,8 +32,9 @@ app.use("/api/product", productRoute);
 app.use("/api/Cart", CartRoute);
 app.use("/api/payment", payementRoute);
 app.use("/api/Customer",Customerrouter);
-app.use("api/service",serviceRoute)
+app.use("/api/service",serviceRoute)
 app.use("/api/report",reportRoute)
+app.use("/api/contact", ContactRoute);
 app.use("/api/dashboard",dashboardrouter)
 app.use("/api/order",orderRoute)
 app.use('/api/measurement',measurementRoute)
