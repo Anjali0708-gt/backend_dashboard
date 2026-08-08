@@ -12,6 +12,8 @@ import payementRoute from './routes/paymentRoute.js'
 import serviceRoute from './routes/ServiceRoute.js'
 import measurementRoute from './routes/MeasurementRoute.js'
 import CartRoute from './routes/CartRoute.js'
+import teamMemberRoutes from "./routes/teamrote.js";
+
 // Connect Database
 connectDB();
 
@@ -33,6 +35,8 @@ app.use("/api/Cart", CartRoute);
 app.use("/api/payment", payementRoute);
 app.use("/api/Customer",Customerrouter);
 app.use("/api/service",serviceRoute)
+app.use("/api/team", teamMemberRoutes);
+
 app.use("/api/report",reportRoute)
 app.use("/api/contact", ContactRoute);
 app.use("/api/dashboard",dashboardrouter)
