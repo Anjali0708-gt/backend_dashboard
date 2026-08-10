@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
   res.send("Server is working");
 });
 app.use("/api/product", productRoute);
-app.use("/api/Cart", CartRoute);
+app.use("/api/cart", CartRoute);
 app.use("/api/payment", payementRoute);
 app.use("/api/Customer",Customerrouter);
 app.use("/api/service",serviceRoute)

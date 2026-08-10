@@ -1,19 +1,18 @@
 import express from "express";
-import authMiddleware from "../Middleware/authMiddleware.js";
+import requireAuth from "../Middleware/requireAuth.js";
 import {
-addToCart,
-getCart,
-removeItem,
-
+  addToCart,
+  getCart,
+  removeItem,
 } from "../Controllers/Addtocart.js";
 
-const router=express.Router();
+const router = express.Router();
 
-router.post("/add", authMiddleware, addToCart);
-router.get("/", authMiddleware, getCart);
-// router.put("/increase/:productId",increaseItem);
-// router.put("/decrease/:productId",decreaseItem);
-router.delete("/remove/:productId", authMiddleware, removeItem);
-// router.delete("/clear",clearCart);
+router.post("/add", requireAuth, addToCart);
+router.get("/", requireAuth, getCart);
+// router.put("/increase/:productId", requireAuth, increaseItem);
+// router.put("/decrease/:productId", requireAuth, decreaseItem);
+router.delete("/remove/:productId", requireAuth, removeItem);
+// router.delete("/clear", requireAuth, clearCart);
 
 export default router;
