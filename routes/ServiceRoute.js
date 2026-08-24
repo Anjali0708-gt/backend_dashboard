@@ -1,6 +1,7 @@
 // Routes/ServiceRoute.js
 
 import express from "express";
+
 import {
   addService,
   getServices,
@@ -11,10 +12,17 @@ import upload from "../Middleware/ImageMulter.js";
 
 const router = express.Router();
 
+// Get all services
 router.get("/", getServices);
 
-router.post("/", upload.single("image"), addService);
+// Add service with image
+router.post(
+  "/",
+  upload.single("image"),
+  addService
+);
 
+// Delete service
 router.delete("/:id", deleteService);
 
 export default router;

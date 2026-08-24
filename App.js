@@ -9,10 +9,12 @@ import reportRoute from "./routes/ReportRoute.js";
 import productRoute from './routes/ProductRoute.js'
 import orderRoute from "./routes/OrderRoute.js"
 import payementRoute from './routes/paymentRoute.js'
-import serviceRoute from './routes/ServiceRoute.js'
+// import serviceRoute from './routes/ServiceRoute.js'
 import measurementRoute from './routes/MeasurementRoute.js'
 import CartRoute from './routes/CartRoute.js'
 import teamMemberRoutes from "./routes/teamrote.js";
+import serviceRoutes from "./routes/ServiceRoute.js";
+import appointmentRoutes from "./routes/appointmentRoutes.js";
 
 // Connect Database
 connectDB();
@@ -30,11 +32,14 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("Server is working");
 });
+
+app.use("/api/services", serviceRoutes);
+app.use("/api/appointments", appointmentRoutes);
 app.use("/api/product", productRoute);
 app.use("/api/cart", CartRoute);
 app.use("/api/payment", payementRoute);
 app.use("/api/Customer",Customerrouter);
-app.use("/api/service",serviceRoute)
+// app.use("/api/service",serviceRoute)
 app.use("/api/team", teamMemberRoutes);
 
 app.use("/api/report",reportRoute)
