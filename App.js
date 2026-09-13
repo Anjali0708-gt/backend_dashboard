@@ -29,9 +29,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send("Server is working");
-});
+// app.get("/", (req, res) => {
+//   res.send("Server is working");
+// });
 
 app.use("/api/services", serviceRoutes);
 app.use("/api/appointments", appointmentRoutes);
@@ -47,6 +47,9 @@ app.use("/api/contact", ContactRoute);
 app.use("/api/dashboard",dashboardrouter)
 app.use("/api/order",orderRoute)
 app.use('/api/measurement',measurementRoute)
+app.get("/", (req, res) => {
+  res.send("VK Stitch Studio Backend is running");
+});
 // Server
 console.log({
   user: process.env.Email,
