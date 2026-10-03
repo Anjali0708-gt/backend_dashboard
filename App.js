@@ -13,6 +13,7 @@ import payementRoute from './routes/paymentRoute.js'
 import measurementRoute from './routes/MeasurementRoute.js'
 import CartRoute from './routes/CartRoute.js'
 // import teamMemberRoutes from "./routes/teamrote.js";
+import ReviewRoutes from "./routes/ReviewRoute.js";
 import serviceRoutes from "./routes/ServiceRoute.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 
@@ -46,6 +47,7 @@ app.use("/api/report",reportRoute)
 app.use("/api/contact", ContactRoute);
 app.use("/api/dashboard",dashboardrouter)
 app.use("/api/order",orderRoute)
+app.use("/api/reviews", ReviewRoutes);
 app.use('/api/measurement',measurementRoute)
 app.get("/", (req, res) => {
   res.send("VK Stitch Studio Backend is running");
