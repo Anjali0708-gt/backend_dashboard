@@ -76,42 +76,48 @@ export const getCart = async (req, res) => {
 // =======================
 // REMOVE ITEM
 // =======================export const removeItem = async (req, res) => {
+
 export const removeItem = async (req, res) => {
   try {
     const { productId } = req.params;
     const userId = req.userId;
 
-    const cart = await Cart.findOne({
-      user: userId
-    });
-
-    if (!cart) {
-      return res.status(404).json({
-        message: "Cart not found"
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({
+        message: "Invalid product ID",
       });
     }
 
-    cart.items = cart.items.filter(
-      (item) =>
-        item.product &&
-        item.product.toString() !== productId
-    );
+    // Atomically remove the product from the user's cart.
+    // This avoids saving a stale Mongoose document.
+    const cart = await Cart.findOneAndUpdate(
+      { user: userId },
+      {
+        $pull: {
+          items: {
+            product: new mongoose.Types.ObjectId(productId),
+          },
+        },
+      },
+      { new: true }
+    ).populate("items.product");
 
-    await cart.save();
-
-    await cart.populate("items.product");
+    if (!cart) {
+      return res.status(404).json({
+        message: "Cart not found",
+      });
+    }
 
     return res.status(200).json({
       message: "Item removed successfully",
-      cartItems: cart.items
+      cartItems: cart.items,
     });
-
   } catch (e) {
     console.error("removeItem error:", e);
 
     return res.status(500).json({
       message: "Error while removing item",
-      error: e.message
+      error: e.message,
     });
   }
 };

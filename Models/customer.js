@@ -10,7 +10,12 @@ const userSchema= new mongoose.Schema
   "phone":{type:String,},
    "password":{type:String},
    "newpassword":{type:String},
-   "otp":{type:String}
+   "otp":{type:String},
+   "role": {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user"
+    }
   
   },
   {

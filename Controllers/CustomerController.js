@@ -33,66 +33,96 @@ export const getbyid = async (req, res) => {
 
 }
 
-export const signin= async (req, res) => {
+export const signin = async (req, res) => {
     try {
-        const {name, email, phone, password} = req.body
-        const exist = await CustomerModel.findOne({ email })
+        const { name, email, phone, password } = req.body;
+
+        const exist = await CustomerModel.findOne({ email });
+
         if (exist) {
-            return   res.status(404).json({ message: "user already exist" })
-        }
-        else{
-
-        
-        const hashed = await bcrypt.hash(password, 10)
-        const user = new CustomerModel({ name, email, phone, password: hashed })
-        await user.save()
-        res.status(201).json({ message: "data saved" })
+            return res.status(404).json({
+                message: "user already exist"
+            });
         }
 
+        const hashed = await bcrypt.hash(password, 10);
+
+        const user = new CustomerModel({
+            name,
+            email,
+            phone,
+            password: hashed,
+            role: "user"
+        });
+
+        await user.save();
+
+        res.status(201).json({
+            message: "data saved"
+        });
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "error while registering"
+        });
     }
-    catch (err) {
-        console.log(err)
+};
+
+export const Login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const exist = await CustomerModel.findOne({ email });
+
+        if (!exist) {
+            return res.status(404).json({
+                message: "user not register"
+            });
+        }
+
+        const comparePassword = await bcrypt.compare(
+            password,
+            exist.password
+        );
+
+        if (!comparePassword) {
+            return res.status(401).json({
+                message: "wrong password"
+            });
+        }
+
+        const token = jwt.sign(
+            {
+                user_id: exist._id,
+                email: exist.email,
+                role: exist.role
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "1h"
+            }
+        );
+
+        return res.status(200).json({
+            message: "user login successfully",
+            token,
+            user: {
+                id: exist._id,
+                name: exist.name,
+                email: exist.email,
+                role: exist.role
+            }
+        });
+
+    } catch (err) {
+        console.log("error while login user", err);
+
+        return res.status(500).json({
+            message: "error while login user"
+        });
     }
-
-
-}
-
-export const Login= async(req,res)=>
-{
-    try
-    {
-       const{email,password}=req.body
-       const exist=await CustomerModel.findOne({email});
-       if(!exist)
-       {
-        return res.status(404).json({message:"user not register"})
-       }
-       const comparePassword = await bcrypt.compare(password, exist.password);
-       if(!comparePassword)
-       {
-         return res.status(303).json({message:"wrong password"})
-       }
-
-       const token = jwt.sign({ user_id: exist._id, email: exist.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-       return res.status(200).json({
-         message:"user login sucessfully",
-         token,
-         user: {
-           id: exist._id,
-           name: exist.name,
-           email: exist.email,
-         }
-       })
-    }
-
-    catch (err) {
-        console.log("error while login user", err)
-        return res.status(500).json({message:"error while login user"})
-    }
-
-
-}
+};
 export const Totaluser=async(req,res)=>
 {
     try{

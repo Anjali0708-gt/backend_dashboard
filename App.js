@@ -45,7 +45,7 @@ app.use("/api/Customer",Customerrouter);
 
 app.use("/api/report",reportRoute)
 app.use("/api/contact", ContactRoute);
-app.use("/api/dashboard",dashboardrouter)
+app.use("/api/dashboard",dashboardrouter) 
 app.use("/api/order",orderRoute)
 app.use("/api/reviews", ReviewRoutes);
 app.use('/api/measurement',measurementRoute)
