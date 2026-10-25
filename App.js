@@ -1,4 +1,3 @@
-
 import express from "express";
 import "dotenv/config";
 import cors from "cors";
@@ -30,6 +29,16 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ✅ NEW: database middleware (must be BEFORE the routes)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(500).json({ message: "Database connection failed" });
+  }
+});
+
 // API routes
 app.use("/api/services", serviceRoutes);
 app.use("/api/appointments", appointmentRoutes);
@@ -48,19 +57,12 @@ app.get("/", (req, res) => {
   res.status(200).send("VK Stitch Studio Backend is running");
 });
 
-// Vercel can handle the exported Express application.
 export default app;
 
-// Start a local server only when running locally.
-if (process.env.NODE_ENV !== "production") {
-  connectDB()
-    .then(() => {
-      const PORT = process.env.PORT || 5000;
-      app.listen(PORT, "0.0.0.0", () => {
-        console.log(`Server running on port ${PORT}`);
-      });
-    })
-    .catch((error) => {
-      console.error("Database connection failed:", error);
-    });
+// ✅ CHANGED: local server only (not on Vercel)
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 }
