@@ -4,12 +4,16 @@ import streamifier from "streamifier";
 
 
 
+
 // =====================================
 // GET ALL PRODUCTS + FILTER
 // =====================================
 
 export const getProducts = async (req, res) => {
   try {
+    console.log("GET PRODUCTS API CALLED");
+    console.log("Query parameters:", req.query);
+
     const {
       category,
       minPrice,
@@ -19,63 +23,75 @@ export const getProducts = async (req, res) => {
       search,
     } = req.query;
 
-    const filter = {
-      active: true,
-    };
+    const filter = { active: true };
 
-    // Category
     if (category) {
       filter.category = category;
     }
 
-    // Price
-    if (minPrice || maxPrice) {
-      filter.price = {};
+    if (minPrice !== undefined && minPrice !== "") {
+      const price = Number(minPrice);
 
-      if (minPrice) {
-        filter.price.$gte = Number(minPrice);
+      if (!Number.isFinite(price) || price < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid minimum price",
+        });
       }
 
-      if (maxPrice) {
-        filter.price.$lte = Number(maxPrice);
+      filter.price = { ...filter.price, $gte: price };
+    }
+
+    if (maxPrice !== undefined && maxPrice !== "") {
+      const price = Number(maxPrice);
+
+      if (!Number.isFinite(price) || price < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid maximum price",
+        });
       }
+
+      filter.price = { ...filter.price, $lte: price };
     }
 
-    // Size
-    if (size) {
-      filter.sizes = size;
-    }
+    if (size) filter.sizes = size;
+    if (color) filter.colors = color;
 
-    // Color
-    if (color) {
-      filter.colors = color;
-    }
+    if (search?.trim()) {
+      const escapedSearch = search.trim().replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+      );
 
-    // Search
-    if (search) {
       filter.name = {
-        $regex: search,
+        $regex: escapedSearch,
         $options: "i",
       };
     }
 
-    const products = await Product.find(filter).sort({
-      createdAt: -1,
-    });
+    console.log("MongoDB filter:", filter);
 
-    res.status(200).json({
+    const products = await Product.find(filter)
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    console.log("Products found:", products.length);
+
+    return res.status(200).json({
       success: true,
       totalProducts: products.length,
       products,
     });
-
   } catch (error) {
+    console.error("GET PRODUCTS ERROR:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Failed to fetch products",
+      error: error.message,
     });
-
   }
 };
 

@@ -1,5 +1,5 @@
 import express from 'express'
-import { getAll,Login,getbyid,signin,filterdata,deleteCustomer,forgetPassword,resetpassword } from '../Controllers/CustomerController.js'
+import { getAll,Login,getbyid,signin,deleteCustomer,updateUser ,forgetPassword,resetpassword } from '../Controllers/CustomerController.js'
 import authMiddleware from '../Middleware/authMiddleware.js'
 
 const router=express.Router()
@@ -12,6 +12,8 @@ router.put('/resetpassword',resetpassword)
 router.get("/", authMiddleware, getAll);
 router.get("/:id", authMiddleware, getbyid)
 router.delete("/delete/:id", authMiddleware, deleteCustomer);
+router.put("/update/:id", updateUser);
+
 // router.post("/search",filterdata)
 // router.post("/loginWithotp",loginWithotp)
 

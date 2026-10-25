@@ -318,3 +318,72 @@ catch(e)
     res.status(500).json({message:"filter error "});
 }
    }
+
+
+   // Add this to your customer controller (same file as getAll, deleteCustomer, etc.)
+// bcrypt, CustomerModel and mongoose are already imported there.
+
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "invalid user id" });
+    }
+
+    // Only allow these fields to be changed (role is NOT editable here)
+    const { name, email, phone, password } = req.body;
+    const updates = {};
+
+    if (name !== undefined) updates.name = name.trim();
+    if (phone !== undefined) updates.phone = phone;
+
+    if (email !== undefined) {
+      const cleanEmail = email.trim().toLowerCase();
+
+      // make sure no OTHER customer already uses this email
+      const emailTaken = await CustomerModel.findOne({
+        email: cleanEmail,
+        _id: { $ne: id },
+      });
+
+      if (emailTaken) {
+        return res.status(409).json({ message: "email already in use" });
+      }
+      updates.email = cleanEmail;
+    }
+
+    // optional: only re-hash when a new password is sent
+    if (password) {
+      updates.password = await bcrypt.hash(password, 10);
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "no data to update" });
+    }
+
+    const user = await CustomerModel.findByIdAndUpdate(
+      id,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+
+    return res.status(200).json({ message: "user updated successfully", user });
+  } catch (err) {
+    console.log("error while updating user", err.message);
+    return res.status(500).json({ message: "error while updating user" });
+  }
+};
+
+/* ---------------------------------------------------------
+  
+
+   router.put("/update/:id", updateUser);
+
+   Final URL (matches the React page):
+   PUT http://localhost:5000/api/Customer/update/:id
+--------------------------------------------------------- */
