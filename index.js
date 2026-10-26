@@ -21,7 +21,8 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    process.env.CLIENT_URL
+    "https://vk-stichstudio-sigma.vercel.app",
+    process.env.CLIENT_URL?.replace(/\/+$/, ""),
   ].filter(Boolean),
   credentials: true
 }));
