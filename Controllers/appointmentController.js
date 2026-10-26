@@ -1,4 +1,4 @@
-import AppointmentModel from "../models/AppointmentModel.js";
+import AppointmentModel from "../Models/AppointmentModel.js";
 import ServiceModel from "../Models/Servicemodel.js";
 
 
