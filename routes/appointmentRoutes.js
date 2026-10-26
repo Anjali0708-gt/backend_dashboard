@@ -3,7 +3,7 @@ import express from "express";
 import {
   getAvailableSlots,
   createAppointment
-} from "../controllers/appointmentController.js";
+} from "../Controllers/appointmentController.js";
 
 const router = express.Router();
 
